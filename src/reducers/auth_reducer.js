@@ -1,10 +1,10 @@
 import { AUTH_USER, UNAUTH_USER, AUTH_ERROR, FORGOT_PASSWORD_REQUEST, RESET_PASSWORD_REQUEST, PROTECTED_TEST } from '../actions/types';
 
-const INITIAL_STATE = { error: '', message: '', content: '', authenticated: false };
+const INITIAL_STATE = { error: '', message: '', content: '', authenticated: false, authToken: '' };
 
 export default function (state = INITIAL_STATE, action) {
   if (action.type === AUTH_USER) {
-    return { ...state, error: '', message: '', authenticated: true };
+    return { ...state, error: '', message: '', authenticated: true, authToken: action.payload };
   } else if (action.type === UNAUTH_USER) {
     return { ...state, authenticated: false, error: action.payload };
   } else if (action.type === AUTH_ERROR) {

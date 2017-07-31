@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { AutoComplete } from 'material-ui';
-import { fetchCUList, retrieveMetrics } from '../../actions/dashboard';
+import { fetchCUList, retrieveMetrics, renderDashboard } from '../../actions/dashboard';
 import { CLIENT_ROOT_URL } from '../../actions/index';
 import { SearchForm } from './searchForm';
 import { SELECTED_CU } from '../../actions/types';
@@ -243,6 +243,8 @@ const mapDispatchToProps = dispatch => ({
       type: SELECTED_CU,
       payload: chosenRequest,
     });
+
+    dispatch(renderDashboard(chosenRequest.cuNumber));
   },
   fetchMetrics: () => dispatch(retrieveMetrics()),
   renderReport: () => {

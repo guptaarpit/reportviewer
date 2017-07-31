@@ -13,7 +13,7 @@ import Widgets from './widget';
 import TableRows from './tableRow';
 import ChartTable from './charttable';
 
-class Main extends Component {
+class Loan extends Component {
   static onFirstQtrSelect(option, props) {
     console.log(option);
     props.selectFirstQtr(option);
@@ -26,9 +26,6 @@ class Main extends Component {
 
   static prepareData(metricItem, assets) {
     const chartData = assets.map(item => item[metricItem.Metric]);
-
-    const colors = chartData.map(value => (value < 0 ? 'rgba(60,0,0,0.5)' : 'rgba(0,60,0,0.5)'));
-    const hoverColor = chartData.map(value => (value < 0 ? 'rgba(60,0,0,1)' : 'rgba(0,60,0,1)'));
     return {
       barData: {
         data: {
@@ -36,9 +33,9 @@ class Main extends Component {
           datasets: [
             {
               label: metricItem.Caption,
-              backgroundColor: colors,
+              backgroundColor: 'rgba(0,60,100,0.5)',
               borderWidth: 1,
-              hoverBackgroundColor: hoverColor,
+              hoverBackgroundColor: 'rgba(0,60,100,1)',
               data: chartData,
             },
           ],
@@ -151,48 +148,48 @@ class Main extends Component {
             <ul className="nav nav-tabs">
               <li className="active">
                 <Link to="#tabs-1" data-toggle="tab" className="h4">
-                  Business Analytics
-                </Link>
+                    Business Analytics
+                  </Link>
               </li>
               <li>
                 <Link to="#tabs-2" data-toggle="tab" className="h4">
-                  IT Processes & Infrastructure
-                </Link>
+                    IT Processes & Infrastructure
+                  </Link>
               </li>
             </ul>
             <div className="tab-content">
               <div id="tabs-1" className="tab-pane active">
                 <div className="nav-tabs-custom bg-gray">
                   <ul className="nav nav-tabs">
-                    <li className="active">
-                      <Link to="#sc1" id="tabDa1" data-toggle="tab" aria-expanded="false">
-                        Overall
-                      </Link>
-                    </li>
                     <li className="">
+                      <Link to="#sc1" id="tabDa1" data-toggle="tab" aria-expanded="false">
+                          Overall
+                        </Link>
+                    </li>
+                    <li className="active">
                       <Link to="#sc2" id="tabDa2" data-toggle="tab" aria-expanded="true">
-                        Assets
-                      </Link>
+                          Assets
+                        </Link>
                     </li>
                     <li>
                       <Link to="#sc3" id="tabDa3" data-toggle="tab">
-                        Liabilities
-                      </Link>
+                          Liabilities
+                        </Link>
                     </li>
                     <li>
                       <Link to="#sc4" id="tabDa4" data-toggle="tab">
-                        Income & Expense
-                      </Link>
+                          Income & Expense
+                        </Link>
                     </li>
                     <li>
                       <Link to="#sc5" id="tabDa5" data-toggle="tab">
-                        PEARLS*
-                      </Link>
+                          PEARLS*
+                        </Link>
                     </li>
                     <li>
                       <Link to="#sc6" id="tabDa6" data-toggle="tab">
-                        CAMELS*
-                      </Link>
+                          CAMELS*
+                        </Link>
                     </li>
                   </ul>
                   <div className="tab-content bg-gray">
@@ -204,41 +201,41 @@ class Main extends Component {
                       <div className="panel panel-primary">
                         <div className="panel-heading text-center bg-aqua">
                           <p style={{ 'font-size': '25px', margin: 0 }} className="lead">
-                            Assets Scorecard
-                          </p>
+                              Assets Scorecard
+                            </p>
                         </div>
                         <div className="panel-body">
                           <div className="w3-row w3-center">
                             <div className="w3-col w3-half MainSC">
                               <p className="lead">Name of CU :
-                                <span className="text-info lead">
-                                  {this.props.selectedCU.name}
-                                </span>
+                                  <span className="text-info lead">
+                                    {this.props.selectedCU.name}
+                                  </span>
                               </p>
                               <p className="lead">State :
-                                <span className="text-info lead">
+                                  <span className="text-info lead">
                                   CALIFORNIA
                                 </span>
                               </p>
                               <p className="lead">Members :
-                                <span className="text-info lead">
+                                  <span className="text-info lead">
                                   XXXX
                                 </span>
                               </p>
                             </div>
                             <div className="w3-col w3-half">
                               <p className="lead">Assets :
-                                <span className="text-info lead" >
+                                  <span className="text-info lead" >
                                   $ XXX B
                                 </span>
                               </p>
                               <p className="lead">Asset Band :
-                                <span className="text-info lead" >
+                                  <span className="text-info lead" >
                                   $ XX - XX B
                                 </span>
                               </p>
                               <p className="lead">Loans :
-                                <span className="text-info lead">
+                                  <span className="text-info lead">
                                   $ XXX B
                                 </span>
                               </p>
@@ -260,8 +257,8 @@ class Main extends Component {
                             <div style={{ display: 'block' }} className="box-body well">
                               <div className="w3-row">
                                 <p className="lead w3-card-8 w3-center w3-cyan">
-                                  Scorecard Metrics
-                                </p>
+                                    Scorecard Metrics
+                                  </p>
                               </div>
                               <div className="w3-row w3-row-padding">
                                 {this.renderWidgets()}
@@ -271,8 +268,8 @@ class Main extends Component {
                           <div className="box box-info">
                             <div className="box-header with-border">
                               <h3 className="box-title">
-                                Quarter wise comparison
-                              </h3>
+                                  Quarter wise comparison
+                                </h3>
                               <div className="box-tools pull-right">
                                 <button
                                   type="button"
@@ -285,10 +282,10 @@ class Main extends Component {
                             </div>
                             <div style={{ display: 'block' }} className="box-body well">
                               <ChartTable
-                                renderTableRow={Main.renderTableRow}
-                                keyParams={this.props.keyparams}
+                                renderTableRow={Loan.renderTableRow}
+                                assets={this.props.assets}
                                 metrics={this.props.metrics}
-                                prepareData={Main.prepareData}
+                                prepareData={Loan.prepareData}
                               />
                             </div>
                           </div>
@@ -303,7 +300,7 @@ class Main extends Component {
                   <ul className="nav nav-tabs">
                     <li className="active">
                       <Link to="#it2" id="tabIT2" data-toggle="tab">Business Continuity Planning
-            (BCP)</Link>
+                          (BCP)</Link>
                     </li>
                     <li>
                       <Link to="#it3" id="tabIT3" data-toggle="tab">Total Cost of Ownership (TCO)</Link>
@@ -324,14 +321,14 @@ class Main extends Component {
                       <div className="panel panel-primary">
                         <div className="panel-heading text-center bg-yellow">
                           <p style={{ 'font-size': '18px', margin: '0' }} className="lead"> Business Continuity
-                  Practises (BCP) Scorecard</p>
+                              Practises (BCP) Scorecard</p>
                         </div>
                         <div className="panel-body text-center">
                           <br />
                           <h4>Please upgrade your account to ITExpert
-                or SuperUser</h4>
+                              or SuperUser</h4>
                           <Link to="http://localhost:8080/pricing" className="w3-btn w3-teal">Upgrade
-                Now</Link>
+                              Now</Link>
                         </div>
                       </div>
                     </div>
@@ -346,14 +343,14 @@ class Main extends Component {
                       <div className="panel panel-primary">
                         <div className="panel-heading text-center bg-yellow">
                           <p style={{ 'font-size': '18px', margin: '0' }} className="lead"> Total Cost of Ownership
-                  (TCO) Scorecard</p>
+                              (TCO) Scorecard</p>
                         </div>
                         <div className="panel-body text-center">
                           <br />
                           <h4>Please upgrade your account to ITExpert
-                or SuperUser</h4>
+                              or SuperUser</h4>
                           <Link to="http://localhost:8080/pricing" className="w3-btn w3-teal">Upgrade
-                Now</Link>
+                              Now</Link>
                         </div>
                       </div>
                     </div>
@@ -369,9 +366,9 @@ class Main extends Component {
                         <div className="panel-body text-center">
                           <br />
                           <h4>Please upgrade your account to ITExpert
-                or SuperUser</h4>
+                              or SuperUser</h4>
                           <Link to="http://localhost:8080/pricing" className="w3-btn w3-teal">Upgrade
-                Now</Link>
+                              Now</Link>
                         </div>
                       </div>
                     </div>
@@ -432,5 +429,5 @@ const mapDispatchToProps = dispatch => ({
   fetchCUList: () => dispatch(fetchCUList()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(Loan);
 

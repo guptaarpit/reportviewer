@@ -16,6 +16,142 @@ body {
   padding-top: 70px;
 }
 
+.login-container {
+  width: 375px;
+  margin: 0 auto;
+}
+
+.login-box.visible {
+  visibility: visible;
+  position: relative;
+  z-index: auto;
+  -moz-transform: scale(1,1) translate(0);
+  -webkit-transform: scale(1,1) translate(0);
+  -o-transform: scale(1,1) translate(0);
+  -ms-transform: scale(1,1) translate(0);
+  transform: scale(1,1) translate(0);
+  transition: transform .3s ease;
+  -moz-transition: -moz-transform .3s ease;
+  -webkit-transition: -webkit-transform .3s ease;
+  -o-transition: -o-transform .2s ease;
+  border-width: 0;
+  margin: 3px 0;
+  border-bottom: none;
+  box-shadow: none;
+  padding: 6px;
+  background-color: #394557;
+}
+
+.widget-body {
+  background-color: #FFF;
+}
+.login-box .widget-main {
+  padding: 16px 36px 36px;
+  background: #F7F7F7;
+}
+
+.header.blue {
+  border-bottom-color: #d5e3ef;
+}
+
+.space-6, [class*=vspace-6] {
+  max-height: 1px;
+  min-height: 1px;
+  overflow: hidden;
+  margin: 6px 0 5px;
+}
+
+.block {
+  display: block!important;
+}
+
+.input-icon.input-icon-right>input {
+  padding-left: 6px;
+  padding-right: 24px;
+}
+
+input[type=email], input[type=url], input[type=search], input[type=tel], input[type=color], input[type=text], input[type=password], input[type=datetime], input[type=datetime-local], input[type=date], input[type=month], input[type=time], input[type=week], input[type=number], textarea {
+  border-radius: 0!important;
+  color: #858585;
+  background-color: #FFF;
+  border: 1px solid #D5D5D5;
+  padding: 5px 4px 6px;
+  font-size: 14px;
+  font-family: inherit;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+  -webkit-transition-duration: .1s;
+  transition-duration: .1s;
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-icon.input-icon-right>.ace-icon {
+  left: auto;
+  right: 3px;
+}
+
+.input-icon>.ace-icon {
+  padding: 0 3px;
+  z-index: 2;
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: 3px;
+  line-height: 30px;
+  display: inline-block;
+  color: #909090;
+  font-size: 16px;
+}
+
+.space {
+  max-height: 1px;
+  min-height: 1px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.btn-primary, .btn-primary.focus, .btn-primary:focus {
+  background-color: #428BCA!important;
+  border-color: #428BCA;
+}
+
+.btn-group-sm>.btn, .btn-sm {
+  border-width: 4px;
+  font-size: 13px;
+  padding: 4px 9px;
+  line-height: 1.38;
+}
+
+.btn {
+  color: #FFF!important;
+  text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+  background-image: none!important;
+  border: 5px solid #FFF;
+  border-radius: 0;
+  box-shadow: none!important;
+  -webkit-transition: background-color .15s,border-color .15s,opacity .15s;
+  -o-transition: background-color .15s,border-color .15s,opacity .15s;
+  transition: background-color .15s,border-color .15s,opacity .15s;
+  vertical-align: middle;
+  margin: 0;
+  position: relative;
+}
+
+.ace-icon {
+  text-align: center;
+}
+
+.login-layout .widget-box .widget-main {
+  padding: 16px 36px 36px;
+  background: #F7F7F7;
+}
+.login-box .widget-main {
+  padding-bottom: 16px;
+}
+
 .navbar-default .navbar-nav > li > a:hover {
   color: $hover-text;
   background-color: $hover-background;

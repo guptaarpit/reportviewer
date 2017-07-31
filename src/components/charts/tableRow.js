@@ -25,8 +25,8 @@ const TableRows = (props) => {
   return (
     <tr>
       <td>{metrics.Caption}</td>
-      <td>{firstMetric}</td>
-      <td>{secondMetric}</td>
+      <td>{numeral(firstMetric).format(metrics.Format)}</td>
+      <td>{numeral(secondMetric).format(metrics.Format)}</td>
       <td>{profitLossValue}% {profitLossIcon}</td>
       <td>
         <BarChart data={barData.data} options={barData.options} />

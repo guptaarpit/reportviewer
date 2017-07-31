@@ -12,10 +12,11 @@ import { AUTH_USER, AUTH_ERROR, UNAUTH_USER, FORGOT_PASSWORD_REQUEST, RESET_PASS
 export function loginUser({ email, password }) {
   return dispatch => axios.post(`${API_URL}/auth/login`, { email, password })
   .then((response) => {
+    console.log(response);
+    dispatch({ type: AUTH_USER, payload: response });
+    window.location.href = `${CLIENT_ROOT_URL}/dashboard`;
     cookie.save('token', response.data.token, { path: '/' });
     cookie.save('user', response.data.user, { path: '/' });
-    dispatch({ type: AUTH_USER });
-    window.location.href = `${CLIENT_ROOT_URL}/dashboard`;
   })
   .catch((error) => {
     errorHandler(dispatch, error.response, AUTH_ERROR);

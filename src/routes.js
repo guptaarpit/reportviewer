@@ -26,6 +26,7 @@ import ResetPassword from './components/auth/reset_password';
 
 import MainDashboard from './components/dashboards/main';
 import MainChart from './components/charts/main';
+import BenchMark from './components/charts/benchmark';
 
 // Import higher order components
 // import RequireAuth from './components/auth/require_auth';
@@ -40,7 +41,7 @@ export default (
     <Route path="forgot-password" component={ForgotPassword} />
     <Route path="reset-password/:resetToken" component={ResetPassword} />
     <Route path="home" component={HomePage} />
-    <Route path="benchmark" component={HomePage} />
+    <Route path="benchmark" component={BenchMark} />
     <Route path="services" component={HomePage} />
     <Route path="schedule" component={HomePage} />
     <Route path="contact" component={HomePage} />

@@ -1,8 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+/* eslint-disable react/prop-types */
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import ioClient from 'socket.io-client';
-import { Link } from 'react-router';
 import { loginUser } from '../../actions/auth';
 
 const form = reduxForm({
@@ -44,38 +44,61 @@ class Login extends Component {
 
   render() {
     return (
-      <div>
-        <div className="page-header"><h3>Sign in</h3></div>
-        <form className="form-horizontal" onSubmit={this.handleFormSubmit}>
-          <div className="alert-warning">
-            {this.renderAlert()}
-          </div>
-          <div className="form-group">
-            <label className="col-sm-3 control-label" htmlFor="email">Email</label>
-            <div className="col-sm-7">
-              <Field
-                name="email"
-                className="form-control"
-                id="email"
-                component="input"
-                type="text"
-                onBlur={e => this.handleChange(e)}
-              />
+      <div className="login-container">
+        <div className="position-relative">
+          <div id="login-box" className="login-box visible widget-box          no-border">
+            <div className="widget-body">
+              <div className="widget-main">
+                <h4 className="header blue lighter bigger">
+                  <i className="ace-icon fa fa-coffee green" />
+                  Please Enter Your Information
+                </h4>
+                <div className="space-6" />
+                <form onSubmit={this.handleSubmit}>
+                  <div className="alert-warning">
+                    {this.renderAlert}
+                  </div>
+                  <fieldset>
+                    <label className="block clearfix" htmlFor="email">
+                      <span className="block input-icon input-icon-right">
+                        <Field
+                          name="email"
+                          className="form-control"
+                          id="email"
+                          component="input"
+                          type="text"
+                          placeholder="Username"
+                          onBlur={e => this.handleChange(e)}
+                        />
+                        <i className="ace-icon fa fa-user" />
+                      </span>
+                    </label>
+                    <label className="block clearfix" htmlFor="password" >
+                      <span className="block input-icon input-icon-right">
+                        <Field
+                          name="password"
+                          className="form-control"
+                          id="password"
+                          component="input"
+                          type="password"
+                        />
+                        <i className="ace-icon fa fa-lock" />
+                      </span>
+                    </label>
+                    <div className="space" />
+                    <div className="clearfix">
+                      <button type="submit" className="width-35 pull-right btn btn-sm btn-primary" >
+                        <i className="ace-icon fa fa-key" />
+                        <span className="bigger-110">Login</span>
+                      </button>
+                    </div>
+                    <div className="space-4" />
+                  </fieldset>
+                </form>
+              </div>
             </div>
-
-            <label className="col-sm-3 control-label" htmlFor="password">Password</label>
-            <div className="col-sm-7">
-              <Field name="password" className="form-control" id="password" component="input" type="password" />
-            </div>
           </div>
-          <div className="form-group">
-            <div className="col-sm-offset-3 col-sm-7">
-              <button type="submit" className="btn btn-primary"> Login
-              </button >
-              <Link to="/forgot-password"> Forgot Password ? </Link>
-            </div>
-          </div>
-        </form>
+        </div>
       </div>
     );
   }

@@ -22,7 +22,7 @@ const Widgets = (props) => {
       <div className="w3-container w3-padding-16">
         <h4 className="w3-card-8 w3-white">{widgetData.Caption}</h4>
         <div className="w3-row">
-          <h3 className="metric">{numeral(widgetData.MetricPercentile).format('0.00%')} {profitLossIcon}</h3>
+          <h3 className="metric">{numeral(widgetData.MetricPercentile).format(widgetData.Format)}{widgetData.ExtraChar} {profitLossIcon}</h3>
         </div>
         <div className="w3-clear" />
         <br />
