@@ -11,10 +11,12 @@ const Widgets = (props) => {
     widgetData,
   } = props;
   let profitLossIcon = '';
-  if (widgetData.MetricPercentile > 0) {
-    profitLossIcon = <i className="fa fa-chevron-up" style={{ color: 'green' }} />;
-  } else if (widgetData.MetricPercentile < 0) {
-    profitLossIcon = <i className="fa fa-chevron-down" style={{ color: 'red' }} />;
+  if (widgetData.IsSymbolRequired) {
+    if (widgetData.MetricPercentile > 0) {
+      profitLossIcon = <i className="fa fa-chevron-up" style={{ color: 'green' }} />;
+    } else if (widgetData.MetricPercentile < 0) {
+      profitLossIcon = <i className="fa fa-chevron-down" style={{ color: 'red' }} />;
+    }
   }
 
   return (

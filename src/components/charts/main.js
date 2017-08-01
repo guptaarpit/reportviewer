@@ -58,6 +58,9 @@ class Main extends Component {
             legend:
             {
               display: false,
+              labels: {
+                fontColor: '#fff',
+              },
             },
             yAxes: [
               {
@@ -97,12 +100,6 @@ class Main extends Component {
     });
   }
 
-
-  componentWillMount() {
-    console.log(this.props.selectedCU);
-
-    // this.props.renderReport(this.props.selectedCU);
-  }
   prepareKnobData(metricItem) {
     const metricValue = this.props[metricItem.Heading][0] ? numeral(this
         .props[metricItem.Heading][0][metricItem.Metric]).value() : 0;
@@ -116,6 +113,7 @@ class Main extends Component {
       MetricPercentile: metricValue,
       StatePercentile: statePercentile,
       AssetBandPercentile: assetBandPercentile,
+      IsSymbolRequired: metricItem.IsSymbolRequired,
       Caption: metricItem.Caption,
       Format: metricItem.DataFormat,
       ExtraChar: metricItem.ExtraChar,
@@ -208,38 +206,81 @@ class Main extends Component {
                           </p>
                         </div>
                         <div className="panel-body">
-                          <div className="w3-row w3-center">
-                            <div className="w3-col w3-half MainSC">
-                              <p className="lead">Name of CU :
-                                <span className="text-info lead">
-                                  {this.props.selectedCU.name}
+                          <div className="row">
+                            <div className="col-sm-2" />
+                            <div className="col-sm-5 MainSC">
+                              <p className="lead text-left">
+                                <span className="text-info text-left">
+                                  Name of CU :
+                                </span>
+                                <span className="text-capitalize lead">
+                                  {`  ${this.props.selectedCU.name}`}
                                 </span>
                               </p>
-                              <p className="lead">State :
-                                <span className="text-info lead">
-                                  CALIFORNIA
+                              <p className="lead text-left">
+                                <span className="text-info text-left">
+                                  State :
+                                </span>
+                                <span className="text-capitalize lead">
+                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
+                                      .stateName : 0}`}
                                 </span>
                               </p>
-                              <p className="lead">Members :
-                                <span className="text-info lead">
-                                  XXXX
+                              <p className="lead text-left">
+                                <span className="text-info text-left">
+                                  City :
+                                </span>
+                                <span className="text-capitalize lead">
+                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
+                                      .City : 0}`}
+                                </span>
+                              </p>
+                              <p className="lead text-left">
+                                <span className="text-info text-left">
+                                  #Members :
+                                </span>
+                                <span className="text-capitalize lead">
+                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
+                                    .TotalMembers : 0}`}
                                 </span>
                               </p>
                             </div>
-                            <div className="w3-col w3-half">
-                              <p className="lead">Assets :
-                                <span className="text-info lead" >
-                                  $ XXX B
+                            <div className="col-sm-5">
+                              <p className="lead text-left">
+                                <span className="text-info">
+                                  Assets :
+                                </span>
+                                <span className="lead text-capitalize" >
+                                  {`  ${this.props.keyparams[0] ? numeral(this.props.keyparams[0].TotalAssets).format('$ 0.0a') : 0}`}
                                 </span>
                               </p>
-                              <p className="lead">Asset Band :
-                                <span className="text-info lead" >
-                                  $ XX - XX B
+                              <p className="lead text-left">
+                                <span className="text-info">
+                                  Asset Band :
+                                </span>
+                                <span className="lead text-capitalize" >
+                                  {`  ${this.props
+                                    .assetbandstatepercentile[0] ? this.props
+                                    .assetbandstatepercentile[0].Asset_Band : 0}`}
                                 </span>
                               </p>
-                              <p className="lead">Loans :
+                              <p className="lead text-left">
+                                <span className="text-info">
+                                  Loans :
+                                </span>
+                                <span className="lead text-capitalize">
+                                  {`  ${this.props
+                                    .keyparams[0] ? numeral(this.props
+                                    .keyparams[0].TotalLoansLease).format('$ 0.0a') : 0}`}
+                                </span>
+                              </p>
+                              <p className="lead text-left">
+                                <span className="text-info text-left">
+                                  #Branches :
+                                </span>
                                 <span className="text-info lead">
-                                  $ XXX B
+                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
+                                      .Branches : 0}`}
                                 </span>
                               </p>
                             </div>

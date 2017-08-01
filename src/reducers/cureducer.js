@@ -1,7 +1,24 @@
 /**
  * Created by arpit on 7/18/2017.
  */
-import { FETCH_ASSETS, FETCH_CULIST, CU_ERRORS, FULFILLED, SELECTED_CU, FETCH_METRICS, FIRSTQTR, SECONDQTR, LIST } from '../actions/types';
+import {
+  FETCH_ASSETS,
+  FETCH_CULIST,
+  CU_ERRORS,
+  FULFILLED,
+  SELECTED_CU,
+  FETCH_METRICS,
+  FIRSTQTR,
+  SECONDQTR,
+  LIST,
+  FETCH_OTHERCUBENCHMARK,
+  OTHERCU,
+  FETCH_ASSETBANDDATA,
+  FETCH_STATEDATA,
+  SELECTEDASSETBAND,
+  SELECTEDSTATE,
+  CUFILTERSTATE,
+} from '../actions/types';
 
 const INITIAL_STATE = {
   assets: [],
@@ -29,12 +46,17 @@ const INITIAL_STATE = {
   OtherSelectedCU: '',
   selectedState: '',
   selectedAssetBand: '',
+  otherCUBenchMarkData: [],
+  stateBMData: [],
+  assetBandBMData: [],
+  cuFilterState: '',
+  maxAssetBand: 0,
   scorecardmetrics: [
-    { Metric: 'GrowthInAssets', StatePercentileMetric: 'AssetGrowth_statepercentile', AssetBandPercentileMetric: 'AssetGrowth_assetbandpercentile', Caption: 'Assets Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '' },
-    { Metric: 'GrowthInLoans', StatePercentileMetric: 'LoanGrowth_statepercentile', AssetBandPercentileMetric: 'LoanGrowth_assetbandpercentile', Caption: 'Loans Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '' },
-    { Metric: 'GrowthInMembers', StatePercentileMetric: 'MemberGrowth_statepercentile', AssetBandPercentileMetric: 'MemberGrowth_assetbandpercentile', Caption: 'Loan per Member Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '' },
-    { Metric: 'ReturnOnEquity', StatePercentileMetric: 'ROE_statepercentile', AssetBandPercentileMetric: 'ROE_assetbandpercentile', Caption: 'Return On Equities', Heading: 'keyparams', DataFormat: '0.00', ExtraChar: '%' },
-    { Metric: 'ReturnOnAssets', StatePercentileMetric: 'ROA_statepercentile', AssetBandPercentileMetric: 'ROA_assetbandpercentile', Caption: 'Return On Assets', Heading: 'camels', DataFormat: '0.00', ExtraChar: '%' },
+    { Metric: 'GrowthInAssets', StatePercentileMetric: 'AssetGrowth_statepercentile', AssetBandPercentileMetric: 'AssetGrowth_assetbandpercentile', Caption: 'Assets Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '', IsSymbolRequired: true },
+    { Metric: 'GrowthInLoans', StatePercentileMetric: 'LoanGrowth_statepercentile', AssetBandPercentileMetric: 'LoanGrowth_assetbandpercentile', Caption: 'Loans Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '', IsSymbolRequired: true },
+    { Metric: 'GrowthInMembers', StatePercentileMetric: 'MemberGrowth_statepercentile', AssetBandPercentileMetric: 'MemberGrowth_assetbandpercentile', Caption: 'Loan per Member Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '', IsSymbolRequired: true },
+    { Metric: 'ReturnOnEquity', StatePercentileMetric: 'ROE_statepercentile', AssetBandPercentileMetric: 'ROE_assetbandpercentile', Caption: 'Return On Equities', Heading: 'keyparams', DataFormat: '0.00', ExtraChar: '%', IsSymbolRequired: false },
+    { Metric: 'ReturnOnAssets', StatePercentileMetric: 'ROA_statepercentile', AssetBandPercentileMetric: 'ROA_assetbandpercentile', Caption: 'Return On Assets', Heading: 'camels', DataFormat: '0.00', ExtraChar: '%', IsSymbolRequired: false },
   ],
   benchMarkMetrics: [
     { Metric: 'Avg_Assets', Caption: 'Assets($)', DataFormat: '0.0a', ExtraChar: '$' },
@@ -81,6 +103,14 @@ export default function (state = INITIAL_STATE, action) {
       return {
         ...state, selectedCU: action.payload,
       };
+    case `${SELECTEDSTATE}`:
+      return {
+        ...state, selectedState: action.payload,
+      };
+    case `${SELECTEDASSETBAND}`:
+      return {
+        ...state, selectedAssetBand: action.payload,
+      };
     case `${FETCH_METRICS}${FULFILLED}`:
       return {
         ...state, metrics: action.payload,
@@ -101,6 +131,16 @@ export default function (state = INITIAL_STATE, action) {
       return {
         ...state, secondQtr: action.payload,
       };
+    case OTHERCU:
+      return {
+        ...state, OtherSelectedCU: action.payload,
+      };
+    case CUFILTERSTATE:
+      return {
+        ...state,
+        cuFilterState: action.payload,
+        CUFilter: state.culist.filter(item => item.STATE === action.payload),
+      };
     case `${FETCH_ASSETS}${FULFILLED}`:
       return {
         ...state,
@@ -117,8 +157,26 @@ export default function (state = INITIAL_STATE, action) {
         AssetBandFilter: action.payload.AssetBandFilter,
         QuarterFilter: action.payload.QuarterFilter,
         CUFilter: action.payload.CUFilter,
+        maxAssetBand: action.payload.maxAssetBand,
+      };
+    case `${FETCH_OTHERCUBENCHMARK}${FULFILLED}`:
+      return {
+        ...state,
+        otherCUBenchMarkData: action.payload.OtherCuData,
+      };
+    case `${FETCH_STATEDATA}${FULFILLED}`:
+      return {
+        ...state,
+        stateBMData: action.payload.CUData,
+      };
+    case `${FETCH_ASSETBANDDATA}${FULFILLED}`:
+      return {
+        ...state,
+        assetBandBMData: action.payload.CUData,
       };
     default:
-      return state;
+      return {
+        ...state,
+      };
   }
 }

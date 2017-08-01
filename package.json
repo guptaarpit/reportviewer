@@ -29,6 +29,8 @@
     "react-redux": "latest",
     "react-router": "^3.0.5",
     "react-router-dom": "^4.1.1",
+    "rc-slider": "latest",
+    "rc-tooltip": "latest",
     "react-tap-event-plugin": "latest",
     "redux": "latest",
     "redux-devtools-extension": "latest",
