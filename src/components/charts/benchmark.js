@@ -2,36 +2,52 @@
 /**
  * Created by arpit on 7/5/2017.
  */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Tooltip from 'rc-tooltip';
 import Slider from 'rc-slider';
 import numeral from 'numeral';
-import { fetchCUList, retrieveOtherCuBenchMark, retrieveStateBenchMark, retrieveAssetBandBenchMark } from '../../actions/dashboard';
+import { AutoComplete } from 'material-ui';
+import { fetchCUList, retrieveOtherCuBenchMark, retrieveStateBenchMark, retrieveAssetBandBenchMark, retrieveAssetBandStateBenchMark } from '../../actions/dashboard';
 import { SELECTED_CU, FIRSTQTR, OTHERCU, LIST, SECONDQTR, SELECTEDSTATE, SELECTEDASSETBAND, CUFILTERSTATE } from '../../actions/types';
 
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
-const Handle = Slider.Handle;
 
-const handle = (props) => {
-  const { value, dragging, index, ...restProps } = props;
-  return (
-    <Tooltip
-      prefixCls="rc-slider-tooltip"
-      overlay={value}
-      visible={dragging}
-      placement="top"
-      key={index}
-    >
-      <Handle value={value} {...restProps} />
-    </Tooltip>
-  );
-};
 
 class BenchMark extends Component {
-  static renderTableRow(metrics, benchmarks, otherCUData, stateData, assetBandData) {
+
+  static filterAutoComplete(searchText, key) {
+    if (searchText.length >= 2) {
+      return AutoComplete.caseInsensitiveFilter(searchText, key);
+    }
+
+    return searchText.length === 0;
+  }
+
+  static generateAssetBand(max) {
+    const assetBandArray = [];
+    let j = 1000;
+    for (let i = 0; i <= max; i += j) {
+      if (i === 10000
+          || i === 100000
+          || i === 1000000
+          || i === 10000000
+          || i === 100000000
+          || i === 1000000000
+          || i === 10000000000
+          || i === 100000000000) {
+        j = i;
+      }
+      assetBandArray.push(i);
+    }
+
+    return assetBandArray;
+  }
+
+  static renderTableRow(metrics,
+    benchmarks,
+    otherCUData,
+    stateData, assetBandData, stateAssetBandData) {
     return metrics.map((item) => {
       if (item.Metric && benchmarks) {
         const propertyCheck = Object.prototype.hasOwnProperty.call(benchmarks, item.Metric);
@@ -42,6 +58,8 @@ class BenchMark extends Component {
           const stateValue = stateData ? numeral(stateData[item.Metric])
               .format(item.DataFormat) : 0;
           const assetBandValue = assetBandData ? numeral(assetBandData[item.Metric])
+              .format(item.DataFormat) : 0;
+          const stateAssetBandValue = stateAssetBandData ? numeral(stateAssetBandData[item.Metric])
               .format(item.DataFormat) : 0;
           return (
             <tr className="w3-border-cyan row">
@@ -60,7 +78,9 @@ class BenchMark extends Component {
               <td className="col-sm-2 w3-border-indigo">
                 {`${item.ExtraChar}${assetBandValue}`}
               </td>
-              <td className="col-sm-2 w3-border-indigo" />
+              <td className="col-sm-2 w3-border-indigo">
+                {`${item.ExtraChar}${stateAssetBandValue}`}
+              </td>
             </tr>
           );
         }
@@ -87,33 +107,85 @@ class BenchMark extends Component {
     });
   }
 
-  static renderReactSlider(maxAssetBand) {
-    if (maxAssetBand > 0) {
-      return (
-        <Range min={0} max={maxAssetBand} defaultValue={[1000, maxAssetBand]} tipFormatter={value => `${value}%`} />
-      );
-    }
-
-    return '';
-  }
-
   onStateChange(e) {
     this.props.selectState(e.target.value);
+    this.retrieveStateAssetBandBM();
     if (this.props.stateBMData.length < 1) {
       this.props.renderStateBenchMarks();
     }
   }
 
   onAssetBandChange(e) {
-    this.props.selectAssetBand(e.target.value);
+    console.log(e);
+    this.props.selectAssetBand(e);
+    this.retrieveStateAssetBandBM();
     if (this.props.assetBandBMData.length < 1) {
       this.props.renderAssetBandBenchMarks();
     }
   }
 
+  onMinAssetBandChange(e) {
+    console.log(e);
+    const maxAssetBand = numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange)
+        .value();
+    const minAssetBand = numeral(e + this.props.minAssetBandRange)
+        .value();
+    if (maxAssetBand > minAssetBand) {
+      this.props.selectAssetBand([e, this.props.selectedAssetBand[1]]);
+      this.retrieveStateAssetBandBM();
+    } else {
+      this.props
+          .selectAssetBand([this.props.selectedAssetBand[1] - e, this.props.selectedAssetBand[1]]);
+      this.retrieveStateAssetBandBM();
+    }
+  }
+
+  onMaxAssetBandChange(e) {
+    console.log(e);
+    const maxAssetBand = numeral(e + this.props.maxAssetBandRange)
+        .value();
+    const minAssetBand = numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange)
+        .value();
+    if (minAssetBand < maxAssetBand) {
+      this.props.selectAssetBand([this.props.selectedAssetBand[0], e]);
+      this.retrieveStateAssetBandBM();
+    } else {
+      this.props.selectAssetBand([this.props.selectedAssetBand[0] - e, e]);
+      this.retrieveStateAssetBandBM();
+    }
+  }
+
+  onMinRangeChange(e) {
+    this.props.minRangeChange(e.target.value);
+    const maxAssetBand = numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange)
+        .value();
+    const minAssetBand = numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange)
+        .value();
+    if (maxAssetBand > minAssetBand) {
+      this.retrieveStateAssetBandBM();
+    } else {
+      this.props
+          .selectAssetBand([1, this.props.selectedAssetBand[1]]);
+      this.retrieveStateAssetBandBM();
+    }
+  }
+
+  onMaxRangeChange(e) {
+    this.props.maxRangeChange(e.target.value);
+    const maxAssetBand = numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange)
+        .value();
+    const minAssetBand = numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange)
+        .value();
+    if (minAssetBand < maxAssetBand) {
+      this.retrieveStateAssetBandBM();
+    } else {
+      this.props.selectAssetBand([1, this.props.selectedAssetBand[1]]);
+      this.retrieveStateAssetBandBM();
+    }
+  }
   onCUChange(e) {
-    this.props.selectOtherCU(e.target.value);
-    this.props.renderOtherCUBenchMarks(e.target.value);
+    this.props.selectOtherCU(e.cuNumber);
+    this.props.renderOtherCUBenchMarks(e.cuNumber);
   }
 
   onChangeQtr(e) {
@@ -121,52 +193,84 @@ class BenchMark extends Component {
   }
 
   changeCUFilter(e) {
-    this.props.selectCUFilterState(e.target.value);
+    this.props.selectCUFilterState(e);
   }
 
-  renderFilterBox(maxAssetBand) {
-    console.log(maxAssetBand);
+  retrieveStateAssetBandBM() {
+    if (this.props.selectedState && this.props.selectedAssetBand) {
+      console.log(numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).value());
+      setTimeout(() => {
+        this.props
+            .renderStateAssetBandBenchMarks(this.props.selectedState,
+                numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).value(),
+                numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).value());
+      }, 1000);
+    }
+  }
+
+  renderReactSlider(maxAssetBand) {
+    if (maxAssetBand > 0) {
+      return (
+        <Range min={0} max={maxAssetBand} value={this.props.selectedAssetBand} tipFormatter={value => numeral(value).format('$0a')} allowCross={false} step={1000000} onAfterChange={e => this.onAssetBandChange(e)} />
+      );
+    }
+
+    return '';
+  }
+
+
+  renderFilterBox(maxAssetBand, otherCuName) {
+    const assetBandArray = BenchMark.generateAssetBand(maxAssetBand);
     return (
       <div className="row">
         <div className="col-sm-7 MainSC">
           <div className="lead text-left">
             <label className="control-label" htmlFor="quarterfilter">
-                Quarter Filter :
-            </label>
-            <select className="form-control" name="quarterfilter" value={this.props.selectedQtr} onChange={e => this.onChangeQtr(e)}>
+                Quarter :
+              </label>
+            <select className="quarter-select" name="quarterfilter" defaultValue={[0, maxAssetBand]} onChange={e => this.onChangeQtr(e)}>
               {this.props.QuarterFilter
-                  .map(option => (<option key={option} value={option}>{option}</option>))}
+                    .map(option => (<option key={option} value={option}>{option}</option>))}
             </select>
           </div>
           <div className="lead text-left">
             <label className="control-label" htmlFor="cuStateFilter">
-                Other CU Filter :
-            </label>
-            <select className="form-control" name="cuStateFilter" value={this.props.cuFilterState} onChange={e => this.changeCUFilter(e)}>
-              {
-                  this.props.StateFilter
-                    .map(option => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))
-                }
-            </select>
-            <select className="form-control" name="cuFilter" value={this.props.OtherSelectedCU} onChange={e => this.onCUChange(e)}>
-              {this.props.CUFilter
-                    .map(option => (
-                      <option key={option.cuNumber} value={option.cuNumber}>
-                        {option.name}
-                      </option>))}
-            </select>
+                Compare Other CU :
+              </label>
+            <div className="row">
+              <div className="range-text-right col-sm-2">
+                <AutoComplete
+                  name="cuMain"
+                  dataSource={this.props.StateFilter}
+                  onNewRequest={e => this.changeCUFilter(e)}
+                  floatingLabelText="State Peer"
+                  fullWidth
+                  searchText={this.props.cuFilterState}
+                  openOnFocus
+                />
+              </div>
+              <div className="range-text-right col-sm-8">
+                <AutoComplete
+                  name="cuMain"
+                  dataSource={this.props.CUFilter}
+                  onNewRequest={e => this.onCUChange(e)}
+                  dataSourceConfig={{ text: 'name', value: 'cuNumber' }}
+                  floatingLabelText="Credit Unions"
+                  filter={BenchMark.filterAutoComplete}
+                  fullWidth
+                  searchText={otherCuName ? otherCuName.name : 'Other CU Name'}
+                  openOnFocus
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div className="col-sm-5">
           <div className="lead text-left">
             <label className="control-label" htmlFor="stateFilter">
-                State Filter :
+                State :
               </label>
-            <select className="form-control" name="stateFilter" value={this.props.selectedState} onChange={e => this.onStateChange(e)}>
+            <select className="state-select" name="stateFilter" value={this.props.selectedState} onChange={e => this.onStateChange(e)}>
               {this.props.StateFilter
                     .map(option => (
                       <option key={option} value={option}>
@@ -175,22 +279,45 @@ class BenchMark extends Component {
             </select>
           </div>
           <div className="lead text-left">
-            <label className="control-label" htmlFor="assetbandFilter">
-                Asset Band Filter:
+            <div>
+              <label className="control-label" htmlFor="assetbandFilter">
+                Asset Band:
               </label>
-            {BenchMark.renderReactSlider(maxAssetBand)}
-            <select
-              className="form-control"
-              name="assetbandFilter"
-              value={this.props.selectedAssetBand}
-              onChange={e => this.onAssetBandChange(e)}
-            >
-              {this.props.AssetBandFilter
-                    .map(option => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>))}
-            </select>
+            </div>
+            <div className="row">
+              <div className="col-sm-1">
+                $
+              </div>
+              <div className="range-text-left col-sm-4">
+                <AutoComplete
+                  name="cuMain"
+                  dataSource={assetBandArray}
+                  onNewRequest={e => this.onMinAssetBandChange(parseFloat(e))}
+                  floatingLabelText="Min"
+                  fullWidth
+                  searchText={this.props.selectedAssetBand[0]}
+                />
+              </div>
+              <div className="col-sm-1">
+                <select className="currency-select" onChange={e => this.onMinRangeChange(e)} value={this.props.minAssetBandRange}><option value={'m'}>M</option><option value={'b'}>B</option></select>
+              </div>
+              <div className="col-sm-1">
+                $
+              </div>
+              <div className="range-text-right col-sm-4">
+                <AutoComplete
+                  name="cuMain"
+                  dataSource={assetBandArray}
+                  onNewRequest={e => this.onMaxAssetBandChange(parseFloat(e))}
+                  floatingLabelText="Max"
+                  fullWidth
+                  searchText={this.props.selectedAssetBand[1]}
+                />
+              </div>
+              <div className="col-sm-1">
+                <select className="currency-select" onChange={e => this.onMaxRangeChange(e)} value={this.props.maxAssetBandRange}><option value={'m'}>M</option><option value={'b'}>B</option></select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -198,6 +325,12 @@ class BenchMark extends Component {
   }
 
   render() {
+    const maxAssetBandValue = numeral(this.props.selectedAssetBand[1]
+        + this.props.maxAssetBandRange)
+        .value();
+    const minAssetBandValue = numeral(this.props.selectedAssetBand[0]
+        + this.props.minAssetBandRange)
+        .value();
     const selectedBenchMark = this.props.benchmarks
         .find(item => item.Quarter === this.props.selectedQtr);
     const otherCUData = this.props.otherCUBenchMarkData ? this.props.otherCUBenchMarkData
@@ -205,22 +338,48 @@ class BenchMark extends Component {
     const stateData = this.props.stateBMData.length >= 1 ? this.props.stateBMData
         .find(item => item.Quarter === this.props.selectedQtr && item.STATE === this.props.selectedState) : '';
     const assetBandData = this.props.assetBandBMData.length >= 1 ? this.props.assetBandBMData
-        .find(item => item.Quarter === this.props.selectedQtr && item.Asset_Band === this.props.selectedAssetBand) : '';
+        .find(item => item.Quarter === this.props.selectedQtr &&
+            (item.MinAssets >= minAssetBandValue && item.MaxAssets <= maxAssetBandValue)) : '';
+    const stateAssetBandData = this.props
+        .stateAssetBandBMData.length >= 1 ? this.props.stateAssetBandBMData
+        .find(item => item.Quarter === this.props.selectedQtr) : '';
     const metrics = this.props.benchMarkMetrics;
     const otherCuName = this.props.culist
         .find(item => item.cuNumber === this.props.OtherSelectedCU);
     const maxAssetBand = this.props.maxAssetBand;
 
+    console.log(assetBandData);
+
     return (
       <div>
         <div className="well-searchbox">
-          {this.renderFilterBox(maxAssetBand)}
+          {this.renderFilterBox(maxAssetBand, otherCuName)}
         </div>
         <table
           style={{ width: '100%', 'text-align': 'center' }}
           className="well nav nav-stacked table table-inverse text-center"
         >
-          <thead>
+          <thead><tr className="w3-cyan text-center row">
+            <th className="col-sm-2 text-center">
+              Quarter
+            </th>
+            <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodN">
+              Your Credit Union
+            </th>
+            <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodO">
+              Other Credit Union
+            </th>
+            <th className="col-sm-2 text-center">
+              State Peer
+            </th>
+            <th className="col-sm-2 text-center">
+              Asset Band Peer
+            </th>
+            <th className="col-sm-2 text-red text-center" rowSpan={2}>
+              <div>{`StatePeers = ${this.props.selectedState}`}</div>
+              <div>{`AssetBand = ${numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).format('$0a')} - ${numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).format('$0a')}`}</div>
+            </th>
+          </tr>
             <tr className="w3-cyan text-center row">
               <th className="col-sm-2 text-center">
                 {this.props.selectedQtr}
@@ -235,17 +394,19 @@ class BenchMark extends Component {
                 {this.props.selectedState}
               </th>
               <th className="col-sm-2 text-center">
-                {this.props.selectedAssetBand}
+                {`${numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).format('$0a')} - ${numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).format('$0a')}`}
               </th>
-              <th className="col-sm-2 text-red text-center">{
-                `State = ${this.props.selectedState} AssetBand = ${this.props.selectedAssetBand}`
-              }</th>
             </tr>
           </thead>
           <tbody>
             {
               BenchMark
-                  .renderTableRow(metrics, selectedBenchMark, otherCUData, stateData, assetBandData)
+                  .renderTableRow(metrics,
+                      selectedBenchMark,
+                      otherCUData,
+                      stateData,
+                      assetBandData,
+                      stateAssetBandData)
             }
           </tbody>
         </table>
@@ -273,10 +434,21 @@ function mapStateToProps(state) {
     assetBandBMData: state.cu.assetBandBMData,
     culist: state.cu.culist,
     maxAssetBand: state.cu.maxAssetBand,
+    stateAssetBandBMData: state.cu.stateAssetBandBMData,
+    minAssetBandRange: state.cu.minAssetBandRange,
+    maxAssetBandRange: state.cu.maxAssetBandRange,
   };
 }
 
 const mapDispatchToProps = dispatch => ({
+  minRangeChange: e => dispatch({
+    type: 'MINRANGE',
+    payload: e,
+  }),
+  maxRangeChange: e => dispatch({
+    type: 'MAXRANGE',
+    payload: e,
+  }),
   selectedItem: chosenRequest => dispatch({
     type: SELECTED_CU,
     payload: chosenRequest,
@@ -317,6 +489,9 @@ const mapDispatchToProps = dispatch => ({
   },
   renderAssetBandBenchMarks: () => {
     dispatch(retrieveAssetBandBenchMark());
+  },
+  renderStateAssetBandBenchMarks: (selectedState, minAssetBand, maxAssetBand) => {
+    dispatch(retrieveAssetBandStateBenchMark(selectedState, minAssetBand, maxAssetBand));
   },
   fetchCUList: () => dispatch(fetchCUList()),
 });

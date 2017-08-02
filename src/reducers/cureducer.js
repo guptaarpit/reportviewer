@@ -18,6 +18,7 @@ import {
   SELECTEDASSETBAND,
   SELECTEDSTATE,
   CUFILTERSTATE,
+  FETCH_STATEASSETBANDBM,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -49,8 +50,11 @@ const INITIAL_STATE = {
   otherCUBenchMarkData: [],
   stateBMData: [],
   assetBandBMData: [],
+  stateAssetBandBMData: [],
   cuFilterState: '',
   maxAssetBand: 0,
+  minAssetBandRange: 'm',
+  maxAssetBandRange: 'b',
   scorecardmetrics: [
     { Metric: 'GrowthInAssets', StatePercentileMetric: 'AssetGrowth_statepercentile', AssetBandPercentileMetric: 'AssetGrowth_assetbandpercentile', Caption: 'Assets Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '', IsSymbolRequired: true },
     { Metric: 'GrowthInLoans', StatePercentileMetric: 'LoanGrowth_statepercentile', AssetBandPercentileMetric: 'LoanGrowth_assetbandpercentile', Caption: 'Loans Growth', Heading: 'keyparams', DataFormat: '0.00%', ExtraChar: '', IsSymbolRequired: true },
@@ -141,6 +145,16 @@ export default function (state = INITIAL_STATE, action) {
         cuFilterState: action.payload,
         CUFilter: state.culist.filter(item => item.STATE === action.payload),
       };
+    case 'MINRANGE':
+      return {
+        ...state,
+        minAssetBandRange: action.payload,
+      };
+    case 'MAXRANGE':
+      return {
+        ...state,
+        maxAssetBandRange: action.payload,
+      };
     case `${FETCH_ASSETS}${FULFILLED}`:
       return {
         ...state,
@@ -173,6 +187,11 @@ export default function (state = INITIAL_STATE, action) {
       return {
         ...state,
         assetBandBMData: action.payload.CUData,
+      };
+    case `${FETCH_STATEASSETBANDBM}${FULFILLED}`:
+      return {
+        ...state,
+        stateAssetBandBMData: action.payload.CUData,
       };
     default:
       return {
