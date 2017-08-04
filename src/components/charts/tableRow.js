@@ -11,24 +11,26 @@ const TableRows = (props) => {
     itemData,
     metrics,
   } = props;
-  const firstMetric = numeral(itemData[0][metrics.Metric]).value();
-  const secondMetric = numeral(itemData[itemData.length - 1][metrics.Metric]).value();
-  let profitLossIcon = '';
-  if (firstMetric > secondMetric) {
-    profitLossIcon = <i className="fa fa-chevron-up" style={{ color: 'green' }} />;
-  } else if (firstMetric < secondMetric) {
-    profitLossIcon = <i className="fa fa-chevron-down" style={{ color: 'red' }} />;
+  const firstMetric = numeral(itemData[itemData.length - 1][metrics.Metric]).value();
+  const secondMetric = numeral(itemData[0][metrics.Metric]).value();
+  let profitLossIcon = <i className="fa fa-caret-square-o-right" />;
+  if (metrics.Format !== '0.00%') {
+    if (firstMetric > secondMetric) {
+      profitLossIcon = <i className="fa fa-chevron-up" style={{ color: 'green' }} />;
+    } else if (firstMetric < secondMetric) {
+      profitLossIcon = <i className="fa fa-chevron-down" style={{ color: 'red' }} />;
+    }
   }
 
   const profitLossValue = numeral(((firstMetric - secondMetric) * 100) / firstMetric).format('0.00');
 
   return (
-    <tr>
-      <td>{metrics.Caption}</td>
-      <td>{numeral(firstMetric).format(metrics.Format)}</td>
-      <td>{numeral(secondMetric).format(metrics.Format)}</td>
-      <td>{profitLossValue}% {profitLossIcon}</td>
-      <td>
+    <tr className="row w3-border-indigo">
+      <td className="text-left text-capitalize col-sm-2 w3-border-indigo">{metrics.Caption}</td>
+      <td className="text-center col-sm-2 w3-border-indigo">{numeral(secondMetric).format(metrics.Format)}</td>
+      <td className="text-center col-sm-2 w3-border-indigo">{numeral(firstMetric).format(metrics.Format)}</td>
+      <td className="text-center col-sm-2 w3-border-indigo">{metrics.Format !== '0.00%' ? `${profitLossValue}%` : numeral(firstMetric).format(metrics.Format)} {profitLossIcon}</td>
+      <td className="col-sm-4 w3-border-indigo">
         <BarChart data={barData.data} options={barData.options} />
       </td>
     </tr>

@@ -27,6 +27,7 @@ import ResetPassword from './components/auth/reset_password';
 import MainDashboard from './components/dashboards/main';
 import MainChart from './components/charts/main';
 import BenchMark from './components/charts/benchmark';
+import QueryBuilder from './components/querybuilder/main';
 
 // Import higher order components
 // import RequireAuth from './components/auth/require_auth';
@@ -42,7 +43,7 @@ export default (
     <Route path="reset-password/:resetToken" component={ResetPassword} />
     <Route path="home" component={HomePage} />
     <Route path="benchmark" component={BenchMark} />
-    <Route path="services" component={HomePage} />
+    <Route path="querybuilder" component={QueryBuilder} />
     <Route path="schedule" component={HomePage} />
     <Route path="contact" component={HomePage} />
     <Route path="chart" component={MainChart} />
@@ -56,7 +57,7 @@ export default (
      <Route path="inbox" component={RequireAuth(Inbox)} />
      <Route path="conversation/new" component={RequireAuth(ComposeMessage)} />
      <Route path="conversation/view/:conversationId" component={RequireAuth(Conversation)} />
-     </Route>*/}
+     </Route> */}
 
     <Route path="*" component={NotFoundPage} />
   </Route>

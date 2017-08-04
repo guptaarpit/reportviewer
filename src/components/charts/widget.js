@@ -41,7 +41,7 @@ const Widgets = (props) => {
             height={100}
             displayInput={false}
             displayCustom={
-                () => (<input type="text" readOnly value={`${numeral(widgetData.StatePercentile).format('0.00%')}`} style={{ width: '55px', height: '50px', position: 'absolute', 'vertical-align': 'middle', 'margin-top': '30px', 'margin-left': '-75px', border: '0px', background: 'none', 'font-style': 'normal', 'font-variant': 'normal', 'font-weight': '100', 'font-stretch': 'normal', 'font-size': '16px', 'line-height': 'normal', 'font-family': 'Arial', 'text-align': 'center', color: 'rgb(238, 170, 34)', padding: '0px', '-webkit-appearance': 'none' }} />)
+                () => (<input type="text" readOnly value={`${Math.ceil(100 - (widgetData.StatePercentile * 100))}/100`} style={{ width: '55px', height: '50px', position: 'absolute', 'vertical-align': 'middle', 'margin-top': '30px', 'margin-left': '-75px', border: '0px', background: 'none', 'font-style': 'normal', 'font-variant': 'normal', 'font-weight': '100', 'font-stretch': 'normal', 'font-size': '16px', 'line-height': 'normal', 'font-family': 'Arial', 'text-align': 'center', color: 'rgb(238, 170, 34)', padding: '0px', '-webkit-appearance': 'none' }} />)
               }
           />
         </div>
@@ -59,7 +59,7 @@ const Widgets = (props) => {
             height={100}
             displayInput={false}
             displayCustom={
-                () => (<input type="text" readOnly value={`${numeral(widgetData.AssetBandPercentile).format('0.00%')}`} style={{ width: '55px', height: '50px', position: 'absolute', 'vertical-align': 'middle', 'margin-top': '30px', 'margin-left': '-75px', border: '0px', background: 'none', 'font-style': 'normal', 'font-variant': 'normal', 'font-weight': '100', 'font-stretch': 'normal', 'font-size': '16px', 'line-height': 'normal', 'font-family': 'Arial', 'text-align': 'center', color: 'rgb(238, 170, 34)', padding: '0px', '-webkit-appearance': 'none' }} />)
+                () => (<input type="text" readOnly value={`${Math.ceil(100 - (widgetData.AssetBandPercentile * 100))}/100`} style={{ width: '55px', height: '50px', position: 'absolute', 'vertical-align': 'middle', 'margin-top': '30px', 'margin-left': '-75px', border: '0px', background: 'none', 'font-style': 'normal', 'font-variant': 'normal', 'font-weight': '100', 'font-stretch': 'normal', 'font-size': '16px', 'line-height': 'normal', 'font-family': 'Arial', 'text-align': 'center', color: 'rgb(238, 170, 34)', padding: '0px', '-webkit-appearance': 'none' }} />)
               }
           />
         </div>

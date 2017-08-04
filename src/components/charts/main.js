@@ -14,25 +14,14 @@ import TableRows from './tableRow';
 import ChartTable from './charttable';
 
 class Main extends Component {
-  static onFirstQtrSelect(option, props) {
-    console.log(option);
-    props.selectFirstQtr(option);
-  }
-
-  static onSecondQtrSelect(option, props) {
-    console.log(option);
-    props.selectSecondQtr(option);
-  }
-
-  static prepareData(metricItem, assets) {
-    const chartData = assets.map(item => item[metricItem.Metric]);
-
+  static prepareData(metricItem, keyparams) {
+    const chartData = keyparams.map(item => item[metricItem.Metric]);
     const colors = chartData.map(value => (value < 0 ? 'rgba(60,0,0,0.5)' : 'rgba(0,60,0,0.5)'));
     const hoverColor = chartData.map(value => (value < 0 ? 'rgba(60,0,0,1)' : 'rgba(0,60,0,1)'));
     return {
       barData: {
         data: {
-          labels: assets.map(item => item.Quarter),
+          labels: keyparams.map(item => item.Quarter),
           datasets: [
             {
               label: metricItem.Caption,
@@ -44,24 +33,19 @@ class Main extends Component {
           ],
         },
         options: {
+          legend: {
+            display: false,
+          },
           maintainAspectRatio: false,
           scales: {
             xAxes: [
               {
                 display: false,
-                ticks:
-                {
+                ticks: {
                   display: false,
                 },
               },
             ],
-            legend:
-            {
-              display: false,
-              labels: {
-                fontColor: '#fff',
-              },
-            },
             yAxes: [
               {
                 display: false,
@@ -79,16 +63,16 @@ class Main extends Component {
 
         },
       },
-      itemData: assets,
+      itemData: keyparams,
       metrics: metricItem,
     };
   }
 
-  static renderTableRow(metrics, assets, next) {
+  static renderTableRow(metrics, keyparams, next) {
     return metrics.map((item) => {
-      const propertyCheck = Object.prototype.hasOwnProperty.call(assets[0], item.Metric);
+      const propertyCheck = Object.prototype.hasOwnProperty.call(keyparams[0], item.Metric);
       if (propertyCheck && item.Drawable === 'TRUE') {
-        const tableData = next(item, assets);
+        const tableData = next(item, keyparams);
         return (<TableRows
           barData={tableData.barData}
           itemData={tableData.itemData}
@@ -100,15 +84,25 @@ class Main extends Component {
     });
   }
 
+  onFromQtrChange(e) {
+    this.props.changeFromQtr(e.target.value);
+  }
+
+  onToQtrChange(e) {
+    this.props.changeToQtr(e.target.value);
+  }
+
   prepareKnobData(metricItem) {
-    const metricValue = this.props[metricItem.Heading][0] ? numeral(this
-        .props[metricItem.Heading][0][metricItem.Metric]).value() : 0;
-    const statePercentile = this.props
-        .assetbandstatepercentile[0] ? numeral(this.props
-        .assetbandstatepercentile[0][metricItem.StatePercentileMetric]).value() : 0;
-    const assetBandPercentile = this.props
-        .assetbandstatepercentile[0] ? numeral(this.props
-        .assetbandstatepercentile[0][metricItem.AssetBandPercentileMetric]).value() : 0;
+    const currentQuarterMetric = this.props[metricItem.Heading]
+        .find(item => item.Quarter === this.props.toQuarter);
+    const currentABSPercentile = this.props.assetbandstatepercentile
+        .find(item => item.Quarter === this.props.toQuarter);
+    const metricValue = currentQuarterMetric ?
+        numeral(currentQuarterMetric[metricItem.Metric]).value() : 0;
+    const statePercentile = currentABSPercentile ?
+        numeral(currentABSPercentile[metricItem.StatePercentileMetric]).value() : 0;
+    const assetBandPercentile = currentABSPercentile ?
+        numeral(currentABSPercentile[metricItem.AssetBandPercentileMetric]).value() : 0;
     return {
       MetricPercentile: metricValue,
       StatePercentile: statePercentile,
@@ -131,6 +125,33 @@ class Main extends Component {
   }
 
   render() {
+    if (this.props.keyparams && this.props.selectedCU) {
+      if (this.props.keyparams[0].cuNumber !== this.props.selectedCU.cuNumber) {
+        this.props.renderReport(this.props.selectedCU);
+      }
+    }
+    const FromQuarterList = this.props.toQuarter ? this.props.QuarterFilter
+        .filter(item => item < this.props.toQuarter) : this.props.QuarterFilter;
+    const ToQuarterList = this.props.fromQuarter ? this.props.QuarterFilter
+        .filter(item => item > this.props.fromQuarter) : this.props.QuarterFilter;
+    const fromQuarterDropDown = (
+      <select className="quarter-select" name="quarterfilter" value={this.props.fromQuarter} onChange={e => this.onFromQtrChange(e)}>
+        {FromQuarterList
+              .map(option => (<option key={option} value={option}>{option}</option>))}
+      </select>);
+    const toQuarterDropDown = (
+      <select className="quarter-select" name="quarterfilter" value={this.props.toQuarter} onChange={e => this.onToQtrChange(e)}>
+        {ToQuarterList
+              .map(option => (<option key={option} value={option}>{option}</option>))}
+      </select>);
+
+    const currentKeyParams = this.props.keyparams
+        .find(item => item.Quarter === this.props.toQuarter);
+    const currentABSPercentile = this.props.assetbandstatepercentile
+        .find(item => item.Quarter === this.props.toQuarter);
+    const filteredKeyParams = this.props.keyparams
+        .filter(item => item.Quarter <= this.props.toQuarter &&
+            item.Quarter >= this.props.fromQuarter);
     // this.props.renderReport(this.props.selectedCU);
     return (
       <div>
@@ -222,8 +243,8 @@ class Main extends Component {
                                   State :
                                 </span>
                                 <span className="text-capitalize lead">
-                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
-                                      .stateName : 0}`}
+                                  {`  ${currentKeyParams ? currentKeyParams
+                                      .stateName : ''}`}
                                 </span>
                               </p>
                               <p className="lead text-left">
@@ -231,8 +252,8 @@ class Main extends Component {
                                   City :
                                 </span>
                                 <span className="text-capitalize lead">
-                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
-                                      .City : 0}`}
+                                  {`  ${currentKeyParams ? currentKeyParams
+                                      .City : ''}`}
                                 </span>
                               </p>
                               <p className="lead text-left">
@@ -240,8 +261,8 @@ class Main extends Component {
                                   #Members :
                                 </span>
                                 <span className="text-capitalize lead">
-                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
-                                    .TotalMembers : 0}`}
+                                  {`  ${currentKeyParams ? numeral(currentKeyParams
+                                    .TotalMembers).format('0,0') : 0}`}
                                 </span>
                               </p>
                             </div>
@@ -251,7 +272,7 @@ class Main extends Component {
                                   Assets :
                                 </span>
                                 <span className="lead text-capitalize" >
-                                  {`  ${this.props.keyparams[0] ? numeral(this.props.keyparams[0].TotalAssets).format('$ 0.0a') : 0}`}
+                                  {`  ${currentKeyParams ? numeral(currentKeyParams.TotalAssets).format('$ 0.0a') : 0}`}
                                 </span>
                               </p>
                               <p className="lead text-left">
@@ -259,9 +280,7 @@ class Main extends Component {
                                   Asset Band :
                                 </span>
                                 <span className="lead text-capitalize" >
-                                  {`  ${this.props
-                                    .assetbandstatepercentile[0] ? this.props
-                                    .assetbandstatepercentile[0].Asset_Band : 0}`}
+                                  {`  ${currentABSPercentile ? currentABSPercentile.Asset_Band : 0}`}
                                 </span>
                               </p>
                               <p className="lead text-left">
@@ -269,9 +288,7 @@ class Main extends Component {
                                   Loans :
                                 </span>
                                 <span className="lead text-capitalize">
-                                  {`  ${this.props
-                                    .keyparams[0] ? numeral(this.props
-                                    .keyparams[0].TotalLoansLease).format('$ 0.0a') : 0}`}
+                                  {`  ${currentKeyParams ? numeral(currentKeyParams.TotalLoansLease).format('$ 0.0a') : 0}`}
                                 </span>
                               </p>
                               <p className="lead text-left">
@@ -279,7 +296,7 @@ class Main extends Component {
                                   #Branches :
                                 </span>
                                 <span className="text-info lead">
-                                  {`  ${this.props.keyparams[0] ? this.props.keyparams[0]
+                                  {`  ${currentKeyParams ? currentKeyParams
                                       .Branches : 0}`}
                                 </span>
                               </p>
@@ -327,9 +344,11 @@ class Main extends Component {
                             <div style={{ display: 'block' }} className="box-body well">
                               <ChartTable
                                 renderTableRow={Main.renderTableRow}
-                                keyParams={this.props.keyparams}
+                                keyParams={filteredKeyParams}
                                 metrics={this.props.metrics}
                                 prepareData={Main.prepareData}
+                                fromQuarterDropDown={fromQuarterDropDown}
+                                toQuarterDropDown={toQuarterDropDown}
                               />
                             </div>
                           </div>
@@ -430,6 +449,7 @@ class Main extends Component {
 function mapStateToProps(state) {
   return {
     selectedCU: state.cu.selectedCU,
+    QuarterFilter: state.cu.QuarterFilter,
     scorecardmetrics: state.cu.scorecardmetrics,
     assets: state.cu.assets,
     liabilities: state.cu.liabilities,
@@ -443,10 +463,20 @@ function mapStateToProps(state) {
     secondQtr: state.cu.secondQtr,
     firstQtrList: state.cu.firstQtrList,
     secondQtrList: state.cu.secondQtrList,
+    fromQuarter: state.cu.fromQuarter,
+    toQuarter: state.cu.toQuarter,
   };
 }
 
 const mapDispatchToProps = dispatch => ({
+  changeFromQtr: value => dispatch({
+    type: 'FROMQUARTER',
+    payload: value,
+  }),
+  changeToQtr: value => dispatch({
+    type: 'TOQUARTER',
+    payload: value,
+  }),
   selectedItem: chosenRequest => dispatch({
     type: SELECTED_CU,
     payload: chosenRequest,

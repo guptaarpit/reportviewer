@@ -10,23 +10,31 @@ const ChartTable = (props) => {
     renderTableRow,
     metrics,
     prepareData,
+    fromQuarterDropDown,
+    toQuarterDropDown,
   } = props;
-
   return (
     <div>
       <table style={{ width: '100%', 'text-align': 'center' }} className="well nav nav-stacked table table-inverse text-center">
         <thead>
-          <tr className="w3-cyan text-center">
-            <th className=" text-center">Metric</th>
-            <th data-toggle="modal" data-target="#modal" className="text-center PeriodN">
-              {keyParams[0] ? keyParams[0].Quarter : 'Latest Quarter'}
+          <tr className="w3-cyan row text-center">
+            <th className="text-center col-sm-2" rowSpan={2}>Metric</th>
+            <th data-toggle="modal" data-target="#modal" className="text-center col-sm-2">
+            From
+          </th>
+            <th data-toggle="modal" data-target="#modal" className="text-center col-sm-2">
+            To
+          </th>
+            <th className="col-sm-2 text-center" rowSpan={2}>Change</th>
+            <th className="text-center col-sm-4" rowSpan={2}>Trend</th>
+          </tr>
+          <tr className="w3-cyan row text-center">
+            <th data-toggle="modal" data-target="#modal" className="text-center col-sm-2 from-quarter">
+              {fromQuarterDropDown}
             </th>
-            <th data-toggle="modal" data-target="#modal" className="text-center PeriodO">
-              {keyParams[0] ? keyParams[keyParams.length - 1].Quarter : 'Starting Quarter'}
+            <th data-toggle="modal" data-target="#modal" className="text-center col-sm-2 to-quarter">
+              {toQuarterDropDown}
             </th>
-            <th className="PeriodC text-center">Change</th>
-            <th className="text-center">Trend</th>
-            <th className="text-red text-center">Delete</th>
           </tr>
         </thead>
         <tbody id="ASSETS">

@@ -91,6 +91,8 @@ const INITIAL_STATE = {
     { Metric: '$DelinquencyRate', Caption: 'Delinquency Rate', DataFormat: '0.00%', ExtraChar: '' },
     { Metric: '$Charge_offRate', Caption: 'Chargeoff Rate', DataFormat: '0.00%', ExtraChar: '' },
   ],
+  fromQuarter: '',
+  toQuarter: '',
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -172,6 +174,8 @@ export default function (state = INITIAL_STATE, action) {
         QuarterFilter: action.payload.QuarterFilter,
         CUFilter: action.payload.CUFilter,
         maxAssetBand: action.payload.maxAssetBand,
+        fromQuarter: action.payload.QuarterFilter[action.payload.QuarterFilter.length - 1],
+        toQuarter: action.payload.QuarterFilter[0],
       };
     case `${FETCH_OTHERCUBENCHMARK}${FULFILLED}`:
       return {
@@ -192,6 +196,16 @@ export default function (state = INITIAL_STATE, action) {
       return {
         ...state,
         stateAssetBandBMData: action.payload.CUData,
+      };
+    case 'FROMQUARTER':
+      return {
+        ...state,
+        fromQuarter: action.payload,
+      };
+    case 'TOQUARTER':
+      return {
+        ...state,
+        toQuarter: action.payload,
       };
     default:
       return {

@@ -2,16 +2,11 @@
  * Created by arpit on 7/5/2017.
  */
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Field, reduxForm } from 'redux-form';
 import { AutoComplete } from 'material-ui';
 import request from 'request';
-
-const form = reduxForm({
-  form: 'cuNameSelect',
-});
 
 class HeaderTemplate extends Component {
   static renderAutoComplete({
@@ -65,13 +60,13 @@ class HeaderTemplate extends Component {
           <Link to="/" className="w3-btn w3-light-gray">Home</Link>
         </li>,
         <li key={`${2}header`}>
-          <Link to="dashboard" className="w3-btn w3-light-gray">Dashboard</Link>
+          <Link to="chart" className="w3-btn w3-light-gray">Dashboard</Link>
         </li>,
         <li key={`${3}header`}>
           <Link to="benchmark" className="w3-btn w3-light-gray">Benchmark</Link>
         </li>,
         <li key={`${4}header`}>
-          <Link to="services" className="w3-btn w3-light-gray">Services</Link>
+          <Link to="querybuilder" className="w3-btn w3-light-gray">Query Builder</Link>
         </li>,
         <li key={`${5}header`}>
           <Link to="schedule" className="w3-btn w3-light-gray">Scheduler</Link>
@@ -114,7 +109,7 @@ class HeaderTemplate extends Component {
     return undefined;
   }
 
-  renderSearchForm() {
+  /* renderSearchForm() {
     return (
       <form className="search-form">
         {this.renderAlert()}
@@ -133,7 +128,7 @@ class HeaderTemplate extends Component {
         </div>
       </form>
     );
-  }
+  } */
 
   render() {
     return (
@@ -164,7 +159,7 @@ class HeaderTemplate extends Component {
                 {this.renderLinks().main}
               </ul>
               <ul className="nav navbar-nav navbar-right">
-                {/* {this.renderSearchForm()}*/}
+                {/* {this.renderSearchForm()} */}
                 {this.renderLinks().right}
               </ul>
             </div>

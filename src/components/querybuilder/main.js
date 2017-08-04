@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import Slider from 'rc-slider';
 import numeral from 'numeral';
 import { AutoComplete } from 'material-ui';
+import { Link } from 'react-router';
 import { fetchCUList, retrieveOtherCuBenchMark, retrieveStateBenchMark, retrieveAssetBandBenchMark, retrieveAssetBandStateBenchMark } from '../../actions/dashboard';
 import { SELECTED_CU, FIRSTQTR, OTHERCU, LIST, SECONDQTR, SELECTEDSTATE, SELECTEDASSETBAND, CUFILTERSTATE } from '../../actions/types';
 
@@ -14,7 +15,15 @@ const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 
 
-class BenchMark extends Component {
+class QueryBuilder extends Component {
+
+  static filterAutoComplete(searchText, key) {
+    if (searchText.length >= 2) {
+      return AutoComplete.caseInsensitiveFilter(searchText, key);
+    }
+
+    return searchText.length === 0;
+  }
 
   static generateAssetBand(max) {
     const assetBandArray = [];
@@ -99,6 +108,10 @@ class BenchMark extends Component {
     });
   }
 
+  /* state = {
+    open: false,
+  }; */
+
   onStateChange(e) {
     this.props.selectState(e.target.value);
     this.retrieveStateAssetBandBM();
@@ -108,6 +121,7 @@ class BenchMark extends Component {
   }
 
   onAssetBandChange(e) {
+    console.log(e);
     this.props.selectAssetBand(e);
     this.retrieveStateAssetBandBM();
     if (this.props.assetBandBMData.length < 1) {
@@ -116,6 +130,7 @@ class BenchMark extends Component {
   }
 
   onMinAssetBandChange(e) {
+    console.log(e);
     const maxAssetBand = numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange)
         .value();
     const minAssetBand = numeral(e + this.props.minAssetBandRange)
@@ -131,6 +146,7 @@ class BenchMark extends Component {
   }
 
   onMaxAssetBandChange(e) {
+    console.log(e);
     const maxAssetBand = numeral(e + this.props.maxAssetBandRange)
         .value();
     const minAssetBand = numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange)
@@ -173,6 +189,7 @@ class BenchMark extends Component {
     }
   }
   onCUChange(e) {
+    console.log(e.target.value);
     this.props.selectOtherCU(e.target.value);
     this.props.renderOtherCUBenchMarks(e.target.value);
   }
@@ -180,6 +197,14 @@ class BenchMark extends Component {
   onChangeQtr(e) {
     this.props.selectFirstQtr(e.target.value);
   }
+/*
+  handleToggle() {
+    this.props.toggleList(!this.state.open);
+  }
+
+  handleNestedListToggle(item) {
+    this.props.toggleList(item.state.open);
+  } */
 
   changeCUFilter(e) {
     this.props.selectCUFilterState(e.target.value);
@@ -187,6 +212,7 @@ class BenchMark extends Component {
 
   retrieveStateAssetBandBM() {
     if (this.props.selectedState && this.props.selectedAssetBand) {
+      console.log(numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).value());
       setTimeout(() => {
         this.props
             .renderStateAssetBandBenchMarks(this.props.selectedState,
@@ -206,11 +232,12 @@ class BenchMark extends Component {
     return '';
   }
 
+  renderCharts() {
+    return this.props.selectedCU;
+  }
 
   renderFilterBox(maxAssetBand) {
-    const assetBandArray = BenchMark.generateAssetBand(maxAssetBand);
-    const cuFilterOnState = this.props.cuFilterState ? this.props.CUFilter
-        .filter(item => item.STATE === this.props.cuFilterState) : this.props.CUFilter;
+    const assetBandArray = QueryBuilder.generateAssetBand(maxAssetBand);
     return (
       <div className="row">
         <div className="col-sm-7 MainSC">
@@ -218,7 +245,7 @@ class BenchMark extends Component {
             <label className="control-label" htmlFor="quarterfilter">
                 Quarter :
               </label>
-            <select className="quarter-select" name="quarterfilter" value={this.props.selectedQtr} onChange={e => this.onChangeQtr(e)}>
+            <select className="quarter-select" name="quarterfilter" defaultValue={[0, maxAssetBand]} onChange={e => this.onChangeQtr(e)}>
               {this.props.QuarterFilter
                     .map(option => (<option key={option} value={option}>{option}</option>))}
             </select>
@@ -229,29 +256,29 @@ class BenchMark extends Component {
               </label>
             <div className="row cu-row">
               <label className="col-sm-2" htmlFor="stateFilter">
-               States
-              </label>
+                  States
+                </label>
               <label className="col-sm-8" htmlFor="stateFilter">
-                Credit Unions
-              </label>
+                  Credit Unions
+                </label>
             </div>
             <div className="row">
               <div className="col-sm-2">
                 <select className="cu-select" name="stateFilter" value={this.props.cuFilterState} onChange={e => this.changeCUFilter(e)}>
                   {this.props.StateFilter
-                      .map(option => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>))}
+                        .map(option => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>))}
                 </select>
               </div>
               <div className="col-sm-8">
                 <select className="cu-select" name="stateFilter" value={this.props.OtherSelectedCU} onChange={e => this.onCUChange(e)}>
-                  {cuFilterOnState
-                      .map(option => (
-                        <option key={option.cuNumber} value={option.cuNumber}>
-                          {option.name}
-                        </option>))}
+                  {this.props.CUFilter
+                        .map(option => (
+                          <option key={option.cuNumber} value={option.cuNumber}>
+                            {option.name}
+                          </option>))}
                 </select>
               </div>
             </div>
@@ -273,13 +300,13 @@ class BenchMark extends Component {
           <div className="lead text-left">
             <div>
               <label className="control-label" htmlFor="assetbandFilter">
-                Asset Band:
-              </label>
+                  Asset Band:
+                </label>
             </div>
             <div className="row asset-band-row">
               <label className="col-sm-1 currency-type" htmlFor="cuMain">
-                $
-              </label>
+                  $
+                </label>
               <div className="range-text-left col-sm-4">
                 <AutoComplete
                   name="cuMain"
@@ -294,8 +321,8 @@ class BenchMark extends Component {
                 <select className="currency-select" onChange={e => this.onMinRangeChange(e)} value={this.props.minAssetBandRange}><option value={'m'}>M</option><option value={'b'}>B</option></select>
               </div>
               <label className="col-sm-1 currency-type" htmlFor="cuMain">
-                $
-              </label>
+                  $
+                </label>
               <div className="range-text-right col-sm-4">
                 <AutoComplete
                   name="cuMain"
@@ -342,58 +369,87 @@ class BenchMark extends Component {
 
     return (
       <div>
-        <div className="well-searchbox">
-          {this.renderFilterBox(maxAssetBand)}
+        <div className="navbar-default sidebar" role="navigation">
+          <div className="sidebar-nav navbar-collapse">
+
+            <ul className="nav" id="side-menu">
+              <li>
+                <Link to="#" className="active"><i className="fa fa-dashboard fa-fw" /> Dashboard</Link>
+              </li>
+              <li className="active">
+                <Link to="#"><i className="fa fa-sitemap fa-fw" /> Multi-Level Dropdown<i className="fa arrow" /></Link>
+                <ul className="nav nav-second-level collapse in" aria-expanded="true">
+                  <li>
+                    <Link to="#">Second Level Item</Link>
+                  </li>
+                  <li className="">
+                    <Link to="#">Third Level <span className="fa arrow" /></Link>
+                    <ul className="nav nav-third-level collapse" aria-expanded="false" style={{ height: '0px' }}>
+                      <li>
+                        <Link to="#">Third Level Item</Link>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </div>
-        <table
-          style={{ width: '100%', 'text-align': 'center' }}
-          className="well nav nav-stacked table table-inverse text-center"
-        >
-          <thead><tr className="w3-cyan text-center row">
-            <th className="col-sm-2 text-center">
-              Quarter
-            </th>
-            <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodN">
-              Your Credit Union
-            </th>
-            <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodO">
-              Other Credit Union
-            </th>
-            <th className="col-sm-2 text-center">
-              State Peer
-            </th>
-            <th className="col-sm-2 text-center">
-              Asset Band Peer
-            </th>
-            <th className="col-sm-2 text-red text-center">
-              Asset Band Peer Within State Peer
-            </th>
-          </tr>
-            <tr className="w3-cyan text-center row">
+        <div className="main-content">
+          <div className="well-searchbox">
+            {this.renderFilterBox(maxAssetBand)}
+          </div>
+
+
+          <table
+            style={{ width: '100%', 'text-align': 'center' }}
+            className="well nav nav-stacked table table-inverse text-center"
+          >
+            <thead><tr className="w3-cyan text-center row">
               <th className="col-sm-2 text-center">
-                {this.props.selectedQtr}
+                Quarter
               </th>
               <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodN">
-                {this.props.selectedCU.name}
+                Your Credit Union
               </th>
               <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodO">
-                {otherCuName ? otherCuName.name : 'Other CU Name'}
+                Other Credit Union
               </th>
               <th className="col-sm-2 text-center">
-                {this.props.selectedState}
+                State Peer
               </th>
               <th className="col-sm-2 text-center">
-                {`${numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).format('$0a')} - ${numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).format('$0a')}`}
+                Asset Band Peer
               </th>
-              <th className="col-sm-2 text-red text-center" rowSpan={2}>
-                <div>{`State = ${this.props.selectedState}`}</div>
-                <div>{`AssetBand = ${numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).format('$0a')} - ${numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).format('$0a')}`}</div>
+              <th className="col-sm-2 text-red text-center">
+                Asset Band Peer Within State Peer
               </th>
             </tr>
-          </thead>
-          <tbody>
-            {
-              BenchMark
+              <tr className="w3-cyan text-center row">
+                <th className="col-sm-2 text-center">
+                  {this.props.selectedQtr}
+                </th>
+                <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodN">
+                  {this.props.selectedCU.name}
+                </th>
+                <th data-toggle="modal" data-target="#modal" className="col-sm-2 text-center PeriodO">
+                  {otherCuName ? otherCuName.name : 'Other CU Name'}
+                </th>
+                <th className="col-sm-2 text-center">
+                  {this.props.selectedState}
+                </th>
+                <th className="col-sm-2 text-center">
+                  {`${numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).format('$0a')} - ${numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).format('$0a')}`}
+                </th>
+                <th className="col-sm-2 text-red text-center" rowSpan={2}>
+                  <div>{`State = ${this.props.selectedState}`}</div>
+                  <div>{`AssetBand = ${numeral(this.props.selectedAssetBand[0] + this.props.minAssetBandRange).format('$0a')} - ${numeral(this.props.selectedAssetBand[1] + this.props.maxAssetBandRange).format('$0a')}`}</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                QueryBuilder
                   .renderTableRow(metrics,
                       selectedBenchMark,
                       otherCUData,
@@ -401,8 +457,9 @@ class BenchMark extends Component {
                       assetBandData,
                       stateAssetBandData)
             }
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
@@ -430,10 +487,16 @@ function mapStateToProps(state) {
     stateAssetBandBMData: state.cu.stateAssetBandBMData,
     minAssetBandRange: state.cu.minAssetBandRange,
     maxAssetBandRange: state.cu.maxAssetBandRange,
+    toggleOpen: state.query.toggleOpen,
+    sideBarData: state.query.sideBarData,
   };
 }
 
 const mapDispatchToProps = dispatch => ({
+  toggleList: payload => dispatch({
+    type: 'TOGGLELIST',
+    payload,
+  }),
   minRangeChange: e => dispatch({
     type: 'MINRANGE',
     payload: e,
@@ -489,5 +552,5 @@ const mapDispatchToProps = dispatch => ({
   fetchCUList: () => dispatch(fetchCUList()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BenchMark);
+export default connect(mapStateToProps, mapDispatchToProps)(QueryBuilder);
 
